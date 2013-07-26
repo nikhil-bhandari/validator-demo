@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Mailgun Address Validation Service</title>
+
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+        <meta content="utf-8" http-equiv="encoding">
+        <link rel="icon" type="image/png" href="http://www.mailgun.com/static/img/favicon.png">
+
+        <link rel=stylesheet type=text/css href="style.css"/>
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <script>
+            // document ready
+            $(function() {
+                // clear username input field
+                $('#login_username').val('');
+
+                // capture all enter and do nothing
+                $('#login_username').keypress(function(e) {
+                    if(e.which == 13) {
+                        $('#login_username').trigger('focusout');
+                        return false;
+                    }
+                });
+
+                // capture clicks on validate and do nothing
+                $("#validate_submit").click(function() {
+                    return false;
+                });
+
+                // attach jquery plugin to validate address
+                $('#login_username').mailgun_validator({
+                    api_key: '40733976039a7f5c8193eea7618d0313aababe20',
+                    in_progress: validation_in_progress,
+                    success: validation_success,
+                    error: validation_error,
+                });
+            });
+
+
+            function validation_in_progress() {
+                rdiv = $('#status')
+
+                // empty out anything we had before
+                rdiv.empty()
+
+                // show in progress
+                rdiv.append("<img src='icons/refresh.png'/>");
+            }
+
+
+            function validation_success(data) {
+                rdiv = $('#status')
+
+                // get icon and suggestion strings
+                icon_str = get_icon_str(data['is_valid'], data['did_you_mean'] != null);
+                sugg_str = get_suggestion_str(data['is_valid'], data['did_you_mean'])
+
+                // clear out any previous text
+                rdiv.empty()
+
+                // set icon and suggestion string
+                rdiv.append(icon_str + ' ' + sugg_str);
+            }
+
+
+            function validation_error(error_message) {
+                rdiv = $('#status')
+
+                // empty out anything we had before
+                rdiv.empty()
+
+                // show in progress
+                rdiv.append(error_message);
+            }
+
+
+            function get_suggestion_str(is_valid, alternate) {
+                if (alternate) {
+                    return '<b class="red">Did you mean:</b> ' +
+                           '<b><i>' +  alternate + '</i></b>';
+                }
+
+                if (is_valid) {
+                    return "Address is valid.";
+                }
+
+                return "Address is invalid."
+            }
+
+            function get_icon_str(is_valid, has_alternate) {
+                if (is_valid && !has_alternate) {
+                    return "<img src='icons/valid-color.png' style='vertical-align:middle'/>";
+                }
+
+                if (is_valid && has_alternate) {
+                    return "<img src='icons/did-you-mean-color.png' style='vertical-align:middle'/>";
+                }
+
+                if (!is_valid) {
+                    return "<img src='icons/invalid-color.png' style='vertical-align:middle'/>";
+                }
+            }
+       </script>
+    </head>
+
+    <body>
+        <h2>Mailgun Address Validator</h2>
+
+
+        <div class="center">
+            <pre>
+Welcome to Mailgun Address Validation Service. Given
+an arbitrary address this service validates address
+based off syntax checks (RFC defined grammar), DNS v-
+alidation, spell checks, and if available, Email Ser-
+viceProvider (ESP) specific local-part grammar.
+
+No addresses submitted to this service are ever stor-
+ed on any Mailgun servers. The parser runs completely
+in memory and no address is persisted after the requ-
+est is complete.
+            </pre>
+
+            <form>
+                <label for="login_username">Email Address</label>
+                <input type="text" name="login_username" id="login_username">
+
+                <fieldset>
+                    <input type="submit" name="validate_submit" id="validate_submit" value="Validate">
+                    <div id="status"></div>
+                </fieldset>
+            </form>
+
+            <pre>
+
+Try some invalid addresses:
+
+   * john@gmail.com: Does not meet Gmail minimum
+     local-part length of 6 characters.
+
+   * john.smith@gmaill.com: Invalid, because
+     gmaill.com does not have valid MX records.
+
+   * john@github.io: Invalid because while github.io
+     does not have any MX records, it does have
+     fallback A records, but alas no Mail Exchanger
+     responds.
+
+Try some valid addresses:
+
+   * john.smith@gmail.com: Meets Gmail 6 character
+     minimum and all other requirements.
+
+   * "hello world"@domain.com: Meets pure syntax
+      checks.
+
+   * John Smith &lt;john@smith.com&gt;: We validate
+     more than addr-specs, we validate full entire
+     mailboxes with display-name and addr-spec.
+            </pre>
+
+        </div>
+
+        <!-- delay loading address validation javascipt -->
+        <script src="mailgun_validator.js"></script>
+    </body>
+
+</html>
