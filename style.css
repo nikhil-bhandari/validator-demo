@@ -4,8 +4,10 @@ body {
 }
 
 form {
-    background: -moz-linear-gradient(top, #fff, #f8f8f8);
+    background-color: #f8f8f8; /* fallback color if gradients are not supported */
     background: -webkit-linear-gradient(top, #fff, #f8f8f8);
+    background: -moz-linear-gradient(top, #fff, #f8f8f8);
+    background: -ms-linear-gradient(top, #fff, #f8f8f8);
     background: linear-gradient(top, #fff, #f8f8f8);
     border: 1px solid #d0d2d5;
     border-bottom: 1px solid #bebfc2;
@@ -34,8 +36,10 @@ input {
 }
 
 fieldset {
-    background: -moz-linear-gradient(top, #ebeced, #dedfe0);
+    background-color: #dedfe0; /* fallback color if gradients are not supported */
     background: -webkit-linear-gradient(top, #ebeced, #dedfe0);
+    background: -moz-linear-gradient(top, #ebeced, #dedfe0);
+    background: -ms-linear-gradient(top, #ebeced, #dedfe0);
     background: linear-gradient(top, #ebeced, #dedfe0);
     border: none;
     border-top: 1px solid #d0d2d5;
@@ -82,8 +86,10 @@ b.red {
 }
 
 #validate_submit {
-    background: -moz-linear-gradient(top, #687587, #404853);
+    background-color: #404853; /* fallback color if gradients are not supported */
     background: -webkit-linear-gradient(top, #687587, #404853);
+    background: -moz-linear-gradient(top, #687587, #404853);
+    background: -ms-linear-gradient(top, #687587, #404853);
     background: linear-gradient(top, #687587, #404853);
     border: none;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.75);
@@ -96,8 +102,10 @@ b.red {
 }
 
 #validate_submit:hover {
-    background: -moz-linear-gradient(top, #5a6675, #333942);
+    background-color: #333942; /* fallback color if gradients are not supported */
     background: -webkit-linear-gradient(top, #5a6675, #333942);
+    background: -moz-linear-gradient(top, #5a6675, #333942);
+    background: -ms-linear-gradient(top, #5a6675, #333942);
     background: linear-gradient(top, #5a6675, #333942);
 }
 
