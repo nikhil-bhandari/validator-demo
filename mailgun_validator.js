@@ -82,7 +82,7 @@ function run_validator(address_text, options) {
         },
         error: function(request, status_text, error) {
             success = true;
-            error_message = 'Error occured, unable to validate address.';
+            error_message = 'Error occurred, unable to validate address.';
 
             if (options && options.error) {
                 options.error(error_message);
@@ -95,7 +95,7 @@ function run_validator(address_text, options) {
 
     // timeout incase of some kind of internal server error
     setTimeout(function() {
-        error_message = 'Error occured, unable to validate address.';
+        error_message = 'Error occurred, unable to validate address.';
         if (!success) {
             if (options && options.error) {
                 options.error(error_message);
