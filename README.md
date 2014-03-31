@@ -14,6 +14,10 @@ Given an arbitrary address, [Mailgun](http://www.mailgun.com) will validate the 
 4. Attach mailgun_validator() function to the email field you want validated
 5. Decide what should happen for valid emails, invalid emails and suggestions
 
+## Demo
+
+http://leemunroe.github.io/validator-demo/
+
 ## More information
 
 * [Validator API Docs](http://documentation.mailgun.com/api-email-validation.html)
