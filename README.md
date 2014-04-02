@@ -14,7 +14,7 @@ Given an arbitrary address, [Mailgun](http://www.mailgun.com) will validate the 
 4. Attach mailgun_validator() function to the email field you want validated
 5. Decide what should happen for valid emails, invalid emails and suggestions
 
-Attaching to a form:
+Attaching to a form field:
 ```Javascript
    $('jquery_selector').mailgun_validator({
        api_key: 'api-key',
