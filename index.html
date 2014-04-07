@@ -1,167 +1,108 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>Advanced jQuery Email Address Validator by Mailgun</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <style>
+    .success{color:#2ECC40;}
+    .error{color:#FF4136;}
+    .warning{color:#FF851B;}
+    </style>
+  </head>
 
-    <head>
-        <title>Mailgun Address Validation Service</title>
+  <body>
+    <h1>Advanced jQuery Email Address Validator by Mailgun</h1>
+    <form>
+      <div>
+        <label for="email">Email address</label><br>
+        <input type="email" name="email" id="email">
+        <div id="status"></div>
+      </div>
+      <div>
+        <button type="submit" id="validate_submit">Validate</button>
+      </div>
+    </form>
 
-        <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-        <meta content="utf-8" http-equiv="encoding">
-        <link rel="icon" type="image/png" href="http://www.mailgun.com/static/img/favicon.png">
+    <p>Try some invalid addresses:
+      <ul>
+        <li><strong>john@gmail.com</strong>: Does not meet Gmail minimum local-part length of 6 characters.</li>
+        <li><strong>john.smith@gmaill.com</strong>: Invalid, because gmaill.com does not have valid MX records.</li>
+        <li><strong>john@microsoft.io</strong>: Invalid because while microsoft.io does not have any MX records, it does have fallback A records, but alas no Mail Exchanger responds.</li>
+      </ul>
+    </p>
+    <p>Try some valid addresses:
+      <ul>
+        <li><strong>john.smith@gmail.com</strong>: Meets Gmail 6 character minimum and all other requirements.</li>
+        <li><strong>"hello world"@domain.com</strong>: Meets pure syntax checks.</li>
+      </ul>
+    </p>
+    <p>Remember to <a href="http://www.mailgun.com">sign up for Mailgun</a> to receive your public API key.</p>
 
-        <link rel=stylesheet type=text/css href="style.css"/>
-        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="mailgun_validator.js"></script>
+    <script>
+      // document ready
+      $(function() {
 
-        <script>
-            // document ready
-            $(function() {
-                // clear username input field
-                $('#login_username').val('');
+        // capture all enter and do nothing
+        $('#email').keypress(function(e) {
+          if(e.which == 13) {
+            $('#email').trigger('focusout');
+            return false;
+          }
+        });
 
-                // capture all enter and do nothing
-                $('#login_username').keypress(function(e) {
-                    if(e.which == 13) {
-                        $('#login_username').trigger('focusout');
-                        return false;
-                    }
-                });
+        // capture clicks on validate and do nothing
+        $("#validate_submit").click(function() {
+          return false;
+        });
 
-                // capture clicks on validate and do nothing
-                $("#validate_submit").click(function() {
-                    return false;
-                });
+        // attach jquery plugin to validate address
+        $('#email').mailgun_validator({
+          api_key: 'pubkey-5ogiflzbnjrljiky49qxsiozqef5jxp7',
+          in_progress: validation_in_progress,
+          success: validation_success,
+          error: validation_error,
+        });
 
-                // attach jquery plugin to validate address
-                $('#login_username').mailgun_validator({
-                    api_key: 'pubkey-5ogiflzbnjrljiky49qxsiozqef5jxp7',
-                    in_progress: validation_in_progress,
-                    success: validation_success,
-                    error: validation_error,
-                });
-            });
-
-
-            function validation_in_progress() {
-                rdiv = $('#status')
-
-                // empty out anything we had before
-                rdiv.empty()
-
-                // show in progress
-                rdiv.append("<img src='icons/refresh.png'/>");
-            }
-
-
-            function validation_success(data) {
-                rdiv = $('#status')
-
-                // get icon and suggestion strings
-                icon_str = get_icon_str(data['is_valid'], data['did_you_mean'] != null);
-                sugg_str = get_suggestion_str(data['is_valid'], data['did_you_mean'])
-
-                // clear out any previous text
-                rdiv.empty()
-
-                // set icon and suggestion string
-                rdiv.append(icon_str + ' ' + sugg_str);
-            }
-
-
-            function validation_error(error_message) {
-                rdiv = $('#status')
-
-                // empty out anything we had before
-                rdiv.empty()
-
-                // show in progress
-                rdiv.append(error_message);
-            }
+      });
 
 
-            function get_suggestion_str(is_valid, alternate) {
-                if (alternate) {
-                    return '<b class="red">Did you mean:</b> ' +
-                           '<b><i>' +  alternate + '</i></b>';
-                }
 
-                if (is_valid) {
-                    return "Address is valid.";
-                }
-
-                return "Address is invalid."
-            }
-
-            function get_icon_str(is_valid, has_alternate) {
-                if (is_valid && !has_alternate) {
-                    return "<img src='icons/valid-color.png' style='vertical-align:middle'/>";
-                }
-
-                if (is_valid && has_alternate) {
-                    return "<img src='icons/did-you-mean-color.png' style='vertical-align:middle'/>";
-                }
-
-                if (!is_valid) {
-                    return "<img src='icons/invalid-color.png' style='vertical-align:middle'/>";
-                }
-            }
-       </script>
-    </head>
-
-    <body>
-        <h2>Mailgun Address Validator</h2>
+      // while the lookup is performing
+      function validation_in_progress() {
+        $('#status').html("<img src='loading.gif' height='16'/>");
+      }
 
 
-        <div class="center">
-            <pre>
-Welcome to Mailgun Address Validation Service. Given
-an arbitrary address this service validates address
-based off syntax checks (RFC defined grammar), DNS v-
-alidation, spell checks, and if available, Email Ser-
-viceProvider (ESP) specific local-part grammar.
 
-No addresses submitted to this service are ever stor-
-ed on any Mailgun servers. The parser runs completely
-in memory and no address is persisted after the requ-
-est is complete.
-            </pre>
+      // if email successfull validated
+      function validation_success(data) {
+        $('#status').html(get_suggestion_str(data['is_valid'], data['did_you_mean']));
+      }
 
-            <form>
-                <label for="login_username">Email Address</label>
-                <input type="text" name="login_username" id="login_username">
 
-                <fieldset>
-                    <input type="submit" name="validate_submit" id="validate_submit" value="Validate">
-                    <div id="status"></div>
-                </fieldset>
-            </form>
 
-            <pre>
+      // if email is invalid
+      function validation_error(error_message) {
+        $('#status').html(error_message);
+      }
 
-Try some invalid addresses:
 
-   * john@gmail.com: Does not meet Gmail minimum
-     local-part length of 6 characters.
 
-   * john.smith@gmaill.com: Invalid, because
-     gmaill.com does not have valid MX records.
+      // suggest a valid email
+      function get_suggestion_str(is_valid, alternate) {
+        if (alternate) {
+          return '<span class="warning">Did you mean <em>' +  alternate + '</em>?</span>';
+        } else if (is_valid) {
+          return '<span class="success">Address is valid.</span>';
+        } else {
+          return '<span class="error">Address is invalid.</span>';
+        }
+      }
 
-   * john@microsoft.io: Invalid because while
-     microsoft.io does not have any MX records,
-     it does have fallback A records, but alas
-     no Mail Exchanger responds.
 
-Try some valid addresses:
-
-   * john.smith@gmail.com: Meets Gmail 6 character
-     minimum and all other requirements.
-
-   * "hello world"@domain.com: Meets pure syntax
-      checks.
-            </pre>
-
-        </div>
-
-        <!-- delay loading address validation javascipt -->
-        <script src="mailgun_validator.js"></script>
-    </body>
-
+    </script>
+  </body>
 </html>
