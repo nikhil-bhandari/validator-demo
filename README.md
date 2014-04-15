@@ -40,7 +40,7 @@ Sample JSON in success callback:
 
 ## Demo
 
-http://leemunroe.github.io/validator-demo/
+http://mailgun.github.io/validator-demo/
 
 ## More information
 
