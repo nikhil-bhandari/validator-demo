@@ -77,14 +77,14 @@
 
 
 
-      // if email successfull validated
+      // if there is a validation result. Email can be valid or invalid
       function validation_success(data) {
         $('#status').html(get_suggestion_str(data['is_valid'], data['did_you_mean']));
       }
 
 
 
-      // if email is invalid
+      // if MailGunAPI is not available
       function validation_error(error_message) {
         $('#status').html(error_message);
       }
